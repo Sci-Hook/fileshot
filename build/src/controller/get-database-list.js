@@ -36,27 +36,40 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var express = require("express");
-var config_parser_1 = require("./src/utils/config-parser");
-var routers_1 = require("./src/routers");
-var log_message_1 = require("./src/utils/log-message");
-function main() {
+exports.controller = void 0;
+var mongodb_1 = require("mongodb");
+var log_message_1 = require("../utils/log-message");
+function controller(req, res) {
     return __awaiter(this, void 0, void 0, function () {
-        var app;
+        var client, admin, result, databases;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    app = express();
-                    return [4 /*yield*/, (0, config_parser_1.parse_config)('config.conf')];
+                    try {
+                        client = new mongodb_1.MongoClient(global.env.DATABASE);
+                    }
+                    catch (error) {
+                        return [2 /*return*/, (0, log_message_1.log_message)('Database connection failed', 'error')];
+                    }
+                    admin = client.db('admin');
+                    return [4 /*yield*/, admin.command({ listDatabases: 1, nameOnly: true })];
                 case 1:
-                    _a.sent();
-                    app.use('/', routers_1.router);
-                    app.listen(global.env.PORT, function () {
-                        (0, log_message_1.log_message)('System is running. PORT: ' + global.env.PORT, 'success');
+                    result = _a.sent();
+                    databases = [];
+                    result.databases.syncForEach(function (database, next) {
+                        if (database.name != 'admin')
+                            databases.push(database.name);
+                        next();
+                    }, function () {
+                        res.json({
+                            status: true,
+                            message: 'Databases finded',
+                            data: databases
+                        });
                     });
                     return [2 /*return*/];
             }
         });
     });
 }
-main();
+exports.controller = controller;
