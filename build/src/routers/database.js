@@ -36,24 +36,28 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.router = void 0;
 var express = require("express");
-var config_parser_1 = require("./src/utils/config-parser");
-var routers_1 = require("./src/routers");
-function main() {
-    return __awaiter(this, void 0, void 0, function () {
-        var app;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    app = express();
-                    return [4 /*yield*/, (0, config_parser_1.parse_config)('config.conf')];
-                case 1:
-                    _a.sent();
-                    app.use('/', routers_1.router);
-                    app.listen(global.env.PORT);
-                    return [2 /*return*/];
-            }
-        });
+var mongodb_1 = require("mongodb");
+exports.router = express.Router();
+exports.router.get('/list', function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var client, admin, result, databases;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                client = new mongodb_1.MongoClient(global.env.DATABASE);
+                admin = client.db('admin');
+                return [4 /*yield*/, admin.command({ listDatabases: 1, nameOnly: true })];
+            case 1:
+                result = _a.sent();
+                databases = [];
+                result.databases.syncForEach(function (database, next) {
+                    databases.push(database.name);
+                    next();
+                }, function () {
+                    res.json(databases);
+                });
+                return [2 /*return*/];
+        }
     });
-}
-main();
+}); });
