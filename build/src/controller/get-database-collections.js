@@ -39,9 +39,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.controller = void 0;
 var mongodb_1 = require("mongodb");
 var log_message_1 = require("../utils/log-message");
+require("syncforeachloop");
 function controller(req, res) {
     return __awaiter(this, void 0, void 0, function () {
-        var client, admin, result, databases;
+        var client, database, result, collections;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -51,20 +52,22 @@ function controller(req, res) {
                     catch (error) {
                         return [2 /*return*/, (0, log_message_1.log_message)('Database connection failed', 'error')];
                     }
-                    admin = client.db('admin');
-                    return [4 /*yield*/, admin.command({ listDatabases: 1, nameOnly: true })];
+                    database = client.db(req.params.database);
+                    return [4 /*yield*/, database.listCollections().toArray()];
                 case 1:
                     result = _a.sent();
-                    databases = [];
-                    result.databases.syncForEach(function (database, next) {
-                        if (database.name != 'admin')
-                            databases.push(database.name);
+                    collections = [];
+                    result.syncForEach(function (collection, next) {
+                        collections.push(collection.name);
                         next();
                     }, function () {
                         res.json({
                             status: true,
-                            message: 'Databases listed',
-                            data: databases
+                            message: 'Database collections listed',
+                            data: {
+                                database: req.params.database,
+                                collections: collections
+                            }
                         });
                     });
                     return [2 /*return*/];
