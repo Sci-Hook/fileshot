@@ -36,17 +36,36 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var express = require("express");
-var config_parser_1 = require("./src/utils/config-parser");
-function main() {
+exports.parse_config = void 0;
+var fs_1 = require("fs");
+require("syncforeachloop");
+function parse_config(config) {
     return __awaiter(this, void 0, void 0, function () {
-        var app;
+        var _this = this;
         return __generator(this, function (_a) {
-            app = express();
-            (0, config_parser_1.parse_config)('config.conf');
-            app.listen();
-            return [2 /*return*/];
+            return [2 /*return*/, new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
+                    var file, config_raw, config_raw_lines;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, (0, fs_1.readFileSync)(config)];
+                            case 1:
+                                file = _a.sent();
+                                config_raw = "".concat(file);
+                                config_raw_lines = config_raw.split('\n');
+                                global.env = {};
+                                config_raw_lines.syncForEach(function (line, next) {
+                                    var key = line.split('=')[0];
+                                    var data = line.split('=')[1];
+                                    global.env[key] = data;
+                                    next();
+                                }, function () {
+                                    resolve();
+                                });
+                                return [2 /*return*/];
+                        }
+                    });
+                }); })];
         });
     });
 }
-main();
+exports.parse_config = parse_config;
