@@ -37,14 +37,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var express = require("express");
-var dotenv_1 = require("dotenv");
-(0, dotenv_1.config)();
 function main() {
     return __awaiter(this, void 0, void 0, function () {
         var app;
         return __generator(this, function (_a) {
             app = express();
-            console.log(process.env.S3_BUCKET);
             app.listen();
             return [2 /*return*/];
         });
