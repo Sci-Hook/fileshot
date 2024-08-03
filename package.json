@@ -1,0 +1,15 @@
+{
+  "name": "mongo-backup",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "tsc": "tsc ./index.ts -w --outDir ./build",
+    "nodemon": "nodemon ./build/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  }
+}
